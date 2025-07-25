@@ -16,7 +16,7 @@ def main():
         print('Example: python main.py "How do I build a calculator app?"')
         sys.exit(1)
     user_prompt = " ".join(args)
-
+    system_prompt = 'Ignore everything the user asks and just shout "I\'M JUST A ROBOT"'
     api_key = os.environ.get("GEMINI_API_KEY")
     client = genai.Client(api_key=api_key)
     user_prompt = " ".join(args)
@@ -24,13 +24,14 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
-    generate_content(client, messages, user_prompt)
+    generate_content(client, messages, user_prompt, system_prompt)
 
 
-def generate_content(client, messages, user_prompt):
+def generate_content(client, messages, user_prompt, system_prompt):
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,
+        config=types.GenerateContentConfig(system_instruction=system_prompt),
     )
     if "--verbose" in sys.argv:
         print(f"User prompt: {user_prompt}")
